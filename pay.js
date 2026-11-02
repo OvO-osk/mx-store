@@ -24,6 +24,8 @@ window.PAY = {
   };
   let form = { name: '', phone: '', addr: '' }, order = null;
   try { form = Object.assign(form, JSON.parse(localStorage.getItem('mx_addr_v1')) || {}); } catch (e) {}
+  let guest = null; try { guest = JSON.parse(localStorage.getItem('mx_guest_v1')); } catch (e) {}
+  if (guest && !form.phone) { form.phone = guest.phone; if (!form.name) form.name = guest.name || ''; }
 
   document.body.insertAdjacentHTML('beforeend', `
     <div class="pay-bg" id="payBg"></div>
@@ -89,6 +91,7 @@ window.PAY = {
     $('#back').onclick = step1;
     $('#paid').onclick = () => {
       const all = loadOrders(); all.unshift(order); saveOrders(all);
+      try { if (!localStorage.getItem('mx_guest_v1')) localStorage.setItem('mx_guest_v1', JSON.stringify({ phone: order.phone, name: order.name })); } catch (e) {}
       S.cart = []; refresh(false);
       step3();
     };
@@ -107,6 +110,7 @@ window.PAY = {
         <p class="mute">店主在支付宝核对到账（金额 + 备注订单号）后安排发货。${C.contact ? `<br>有问题请联系：<b>${esc(C.contact)}</b>` : ''}</p>
         <pre class="pay-text">${esc(text)}</pre>
         <button class="btn wide" id="cpAll">复制订单信息，发给店主</button>
+        <a class="btn wide ghost" href="orders.html">查看我的订单</a>
         <button class="pay-back" id="done">完成</button>
       </div>`;
     $('#cpAll').onclick = () => copy(text, '订单信息已复制');
