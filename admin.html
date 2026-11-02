@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M X 商家后台</title>
+<meta name="robots" content="noindex">
+<style>
+:root{--ink:#1d1d1f;--mute:#6e6e73;--soft:#f5f5f7;--line:#e8e8ed;--blue:#1677FF;--ok:#1a9a52;--warn:#d97a00;--bad:#c9342b;--card:#fff;--bg:#f5f5f7;
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+@media (prefers-color-scheme:dark){:root{--ink:#f5f5f7;--mute:#a1a1a6;--soft:#2c2c2e;--line:#38383a;--card:#1c1c1e;--bg:#000}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--font)}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line)}
+.hd{max-width:960px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:10px}
+.hd b{font-size:18px;white-space:nowrap}.hd a{white-space:nowrap}
+@media (max-width:520px){.hd span{display:none}}.hd span{color:var(--mute);font-size:13px}.hd a{margin-left:auto;color:var(--blue);text-decoration:none;font-size:14px}
+main{max-width:960px;margin:0 auto;padding:16px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.k{background:var(--card);border-radius:16px;padding:14px 16px}.k small{color:var(--mute);font-size:13px}.k b{display:block;font-size:26px;font-variant-numeric:tabular-nums;margin-top:2px}
+.k i{font-style:normal;font-size:12px;color:var(--mute)}
+.box{background:var(--card);border-radius:16px;padding:16px;margin-top:14px}
+h2{font-size:17px;margin:0 0 10px}
+textarea,input,select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 11px;width:100%}
+textarea{min-height:120px;resize:vertical}
+.btn{font:inherit;border:0;border-radius:980px;padding:9px 18px;background:var(--blue);color:#fff;cursor:pointer}
+.btn.g{background:var(--soft);color:var(--ink)}.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.tabs button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:980px;padding:5px 12px;cursor:pointer}
+.tabs button.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.o{border-top:1px solid var(--line);padding:12px 0;display:grid;grid-template-columns:1fr auto;gap:6px 12px}
+.o .no{font-weight:600;font-variant-numeric:tabular-nums}.o .m{color:var(--mute);font-size:13px;white-space:pre-line}
+.o .amt{font-weight:700;text-align:right}.o .act{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+.o .act button{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:4px 10px;cursor:pointer}
+.st{display:inline-block;font-size:12px;border-radius:6px;padding:1px 7px;margin-left:6px;color:#fff}
+.st.s0{background:var(--warn)}.st.s1{background:var(--blue)}.st.s2{background:var(--ok)}.st.s3{background:var(--bad)}
+.empty{color:var(--mute);text-align:center;padding:24px 0}
+.note{color:var(--mute);font-size:13px;margin:8px 0 0}
+h2 .note{font-weight:400;margin-left:8px}
+.ship{grid-column:1/-1;display:grid;grid-template-columns:130px 1fr auto;gap:6px}
+.ship select,.ship input{padding:7px 9px}
+@media (max-width:520px){.ship{grid-template-columns:1fr 1fr}.ship .btn{grid-column:1/-1}}
+.o .act a{font-size:13px;border:1px solid var(--line);border-radius:8px;padding:4px 10px;color:var(--blue);text-decoration:none}
+.o .act button.hi{background:var(--blue);color:#fff;border-color:var(--blue)}
+.m.ok{color:var(--ok);margin-top:4px}
+</style>
+</head>
+<body>
+<header><div class="hd"><b>M X 商家后台</b><span>订单记账 · 数据只存在这台设备</span><a href="index.html">返回商店 →</a></div></header>
+<main>
+  <section class="kpis" id="kpis"></section>
+
+  <section class="box">
+    <h2>录入订单</h2>
+    <textarea id="paste" placeholder="把买家微信发来的「【M X 订单】…」整段粘贴到这里，可以一次粘贴多单"></textarea>
+    <div class="row"><button class="btn" id="add">识别并录入</button><span class="note" id="msg"></span></div>
+    <p class="note">录入后先去支付宝账单核对：金额一致、备注里有这个订单号，再点「确认到账」。</p>
+  </section>
+
+  <section class="box">
+    <h2>订单 <span class="note" id="msg2"></span></h2>
+    <div class="tabs" id="tabs"></div>
+    <div id="list"></div>
+  </section>
+
+  <section class="box">
+    <h2>备份</h2>
+    <div class="row"><button class="btn g" id="exp">导出备份文件</button><label class="btn g">导入备份<input type="file" id="imp" accept=".json" hidden></label></div>
+    <p class="note">订单记录只保存在当前浏览器。换手机、清缓存前请先导出备份。</p>
+  </section>
+</main>
+<script src="ship.js"></script>
+<script>
+const K = 'mx_admin_orders_v1';
+const ST = ['待确认到账', '待发货', '已发货', '已关闭'];
+let O = []; try { O = JSON.parse(localStorage.getItem(K)) || []; } catch (e) {}
+let tab = -1;
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const save = () => { try { localStorage.setItem(K, JSON.stringify(O)); } catch (e) {} render(); };
+const yuan = v => '¥' + v.toLocaleString('zh-CN', { maximumFractionDigits: 2 });
+
+function parse(text) {
+  return text.split(/(?=【M X 订单】)/).map(b => {
+    const no = (b.match(/【M X 订单】\s*(MX\d+)/) || [])[1];
+    if (!no) return null;
+    const amount = +((b.match(/金额：¥([\d.]+)/) || [])[1] || 0);
+    const items = (b.match(/^·.*$/gm) || []).map(s => s.replace(/^·\s*/, ''));
+    const who = (b.match(/收货人：(.*)/) || [])[1] || '';
+    const addr = (b.match(/地址：(.*)/) || [])[1] || '';
+    return { no, amount, items, who: who.trim(), addr: addr.trim(), st: 0, added: Date.now() };
+  }).filter(Boolean);
+}
+$('#add').onclick = () => {
+  const got = parse($('#paste').value); let n = 0, dup = 0;
+  got.forEach(o => { if (O.some(x => x.no === o.no)) dup++; else { O.unshift(o); n++; } });
+  $('#msg').textContent = got.length ? `录入 ${n} 单${dup ? `，${dup} 单已存在` : ''}` : '没识别到订单，请粘贴完整的「【M X 订单】」消息';
+  if (n) $('#paste').value = ''; save();
+};
+
+function render() {
+  const now = new Date(), ym = now.getFullYear() * 12 + now.getMonth();
+  const inMonth = o => { const d = new Date(o.added); return d.getFullYear() * 12 + d.getMonth() === ym; };
+  const paid = O.filter(o => o.st === 1 || o.st === 2);
+  const cnt = s => O.filter(o => o.st === s).length;
+  $('#kpis').innerHTML = [
+    ['本月收入', yuan(paid.filter(inMonth).reduce((a, o) => a + o.amount, 0)), '已确认到账'],
+    ['累计收入', yuan(paid.reduce((a, o) => a + o.amount, 0)), `${paid.length} 单`],
+    ['待确认到账', cnt(0), '去支付宝核对'],
+    ['待发货', cnt(1), ''],
+    ['已发货', cnt(2), ''],
+    ['已关闭', cnt(3), ''],
+  ].map(([a, b, c]) => `<div class="k"><small>${a}</small><b>${b}</b><i>${c}</i></div>`).join('');
+
+  $('#tabs').innerHTML = [['全部', -1], ...ST.map((s, i) => [s, i])].map(([s, i]) =>
+    `<button data-t="${i}" class="${tab === i ? 'on' : ''}">${s} ${i < 0 ? O.length : cnt(i)}</button>`).join('');
+  $('#tabs').querySelectorAll('button').forEach(b => b.onclick = () => { tab = +b.dataset.t; render(); });
+
+  const rows = O.filter(o => tab < 0 || o.st === tab);
+  const fmt = t => t ? new Date(t).toLocaleString('zh-CN') : '';
+  const opts = c => SHIP.CARRIERS.map(([k, n]) => `<option value="${k}"${k === c ? ' selected' : ''}>${n}</option>`).join('');
+  $('#list').innerHTML = rows.length ? rows.map(o => {
+    const acts = { 0: [['确认到账', 1], ['关闭订单', 3]], 1: [['关闭订单', 3]], 2: [], 3: [['恢复', 0]] }[o.st];
+    const shipForm = (o.st === 1 || (o.st === 2 && o.edit)) ? `
+      <div class="ship"><select data-c="${esc(o.no)}">${opts(o.carrier || 'shunfeng')}</select>
+        <input data-tn="${esc(o.no)}" placeholder="快递单号" value="${esc(o.tn || '')}" autocomplete="off">
+        <button class="btn" data-ship="${esc(o.no)}">${o.st === 2 ? '保存单号' : '填好单号，发货'}</button></div>` : '';
+    const shipInfo = o.st === 2 && !o.edit ? `<div class="m ok">${esc(SHIP.carrierName(o.carrier))} ${esc(o.tn)} · 发货 ${fmt(o.shippedAt)}</div>` : '';
+    return `<div class="o"><div><span class="no">${esc(o.no)}</span><span class="st s${o.st}">${ST[o.st]}</span>
+      <div class="m">${esc(o.items.join('\n'))}\n${esc(o.who)} · ${esc(o.addr)}\n录入 ${fmt(o.added)}</div>${shipInfo}</div>
+      <div class="amt">${yuan(o.amount)}</div>${shipForm}
+      <div class="act">${acts.map(([t, s]) => `<button data-no="${esc(o.no)}" data-s="${s}">${t}</button>`).join('')}
+      ${o.st === 2 ? `<a target="_blank" rel="noopener" href="${SHIP.trackURL(o.carrier, o.tn)}">查物流</a><button data-edit="${esc(o.no)}">修改单号</button>` : ''}
+      ${o.st === 1 || o.st === 2 ? `<button class="hi" data-send="${esc(o.no)}">复制发给买家</button>` : ''}
+      <button data-no="${esc(o.no)}" data-del="1">删除</button></div></div>`;
+  }).join('') : '<p class="empty">还没有订单</p>';
+  const find = no => O.find(o => o.no === no);
+  $('#list').querySelectorAll('button').forEach(b => b.onclick = () => {
+    const d = b.dataset;
+    if (d.ship) {
+      const o = find(d.ship), tn = $(`input[data-tn="${d.ship}"]`).value.trim().replace(/\s+/g, '');
+      if (!/^[A-Za-z0-9-]{6,30}$/.test(tn)) { $('#msg2').textContent = '快递单号格式不对'; return; }
+      o.carrier = $(`select[data-c="${d.ship}"]`).value; o.tn = tn;
+      if (o.st !== 2) { o.st = 2; o.shippedAt = Date.now(); }
+      delete o.edit; save(); sendText(o); return;
+    }
+    if (d.edit) { find(d.edit).edit = true; render(); return; }
+    if (d.send) { sendText(find(d.send)); return; }
+    const i = O.findIndex(o => o.no === d.no);
+    if (d.del) { if (!d.sure) { d.sure = 1; b.textContent = '再点一次确认删除'; return; } O.splice(i, 1); }
+    else { O[i].st = +d.s; if (+d.s === 1 && !O[i].paidAt) O[i].paidAt = Date.now(); }
+    save();
+  });
+}
+/* 发给买家的消息：订单信息 + 物流全部编码进链接，买家打开就进了「我的订单」 */
+function sendText(o) {
+  const ph = (o.who.match(/1\d{10}/) || [''])[0];
+  const link = SHIP.ordersURL({ no: o.no, amount: o.amount, items: o.items, name: o.who.replace(/\s*1\d{10}/, ''), phone: ph, addr: o.addr,
+    st: o.st, carrier: o.carrier || '', tn: o.tn || '', added: o.added, paidAt: o.paidAt || 0, shippedAt: o.shippedAt || 0 });
+  const t = o.st === 2
+    ? `您的订单 ${o.no} 已发货：${SHIP.carrierName(o.carrier)} ${o.tn}\n查看订单和物流：${link}`
+    : `您的订单 ${o.no} 已确认收款，正在备货\n查看订单：${link}`;
+  const done = () => $('#msg2').textContent = `已复制 ${o.no} 的消息，去微信粘贴给买家`;
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(done, () => fb(t, done)); else fb(t, done);
+}
+function fb(t, done) { const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); done(); } catch (e) {} a.remove(); }
+$('#exp').onclick = () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(O, null, 1)], { type: 'application/json' }));
+  a.download = `mx订单备份_${new Date().toISOString().slice(0, 10)}.json`; a.click();
+};
+$('#imp').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  f.text().then(t => { try { const d = JSON.parse(t); let n = 0; d.forEach(o => { if (o.no && !O.some(x => x.no === o.no)) { O.push(o); n++; } }); $('#msg').textContent = `从备份导入 ${n} 单`; save(); } catch (er) { $('#msg').textContent = '备份文件读不出来'; } });
+};
+render();
+</script>
+</body>
+</html>
