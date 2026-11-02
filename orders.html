@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>我的订单 · M X 化妆品批发中心</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231d1d1f'/%3E%3Ctext x='32' y='42' font-size='26' font-weight='700' text-anchor='middle' fill='%23fff' font-family='Arial'%3EMX%3C/text%3E%3C/svg%3E">
+<style>
+.mo{background:#f5f5f7;color:#1d1d1f;min-height:calc(100vh - 48px);padding:28px 16px 60px}
+.mo-in{max-width:640px;margin:0 auto}
+.mo h1{font-size:32px;font-weight:700;margin-bottom:4px}
+.mo .lead{color:#6e6e73;font-size:14px;margin-bottom:18px}
+.panel{background:#fff;border-radius:20px;padding:20px;margin-bottom:14px}
+.panel label{display:block;font-size:13px;color:#6e6e73;margin-bottom:12px}
+.panel input{display:block;width:100%;margin-top:4px;padding:11px 12px;border:1px solid #d2d2d7;border-radius:12px;font:inherit;font-size:16px;color:#1d1d1f}
+.panel input:focus{outline:none;border-color:#0071e3;box-shadow:0 0 0 3px rgba(0,113,227,.18)}
+.mo .btn{width:100%}
+.who{display:flex;align-items:center;gap:12px}
+.who .av{width:44px;height:44px;border-radius:50%;background:#1d1d1f;color:#fff;display:grid;place-items:center;font-weight:700}
+.who b{display:block}.who small{color:#6e6e73}
+.who button{margin-left:auto;color:#0066cc;font-size:14px}
+.od{background:#fff;border-radius:20px;padding:18px 18px 14px;margin-bottom:14px}
+.od-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px;color:#6e6e73}
+.od-h b{color:#1d1d1f;font-variant-numeric:tabular-nums}
+.tag{font-size:12px;border-radius:6px;padding:2px 8px;color:#fff;white-space:nowrap}
+.t0{background:#d97a00}.t1{background:#0071e3}.t2{background:#1a9a52}.t3{background:#8e8e93}
+.it{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f2}
+.it .th{width:56px;height:56px;border-radius:12px;background:#f5f5f7;flex:none;display:grid;place-items:center;overflow:hidden}
+.it img{width:100%;height:100%;object-fit:contain}
+.it span{flex:1;font-size:14px;min-width:0}.it small{display:block;color:#6e6e73;font-size:12px}
+.it b{font-size:14px}
+.od-sum{text-align:right;font-size:14px;padding:10px 0 4px}.od-sum b{font-size:18px}
+.tl{list-style:none;margin:10px 0 4px;padding:0 0 0 18px;border-left:2px solid #e8e8ed}
+.tl li{position:relative;font-size:13px;color:#6e6e73;padding:0 0 12px 4px}
+.tl li::before{content:"";position:absolute;left:-25px;top:4px;width:10px;height:10px;border-radius:50%;background:#d2d2d7;border:2px solid #fff}
+.tl li.on{color:#1d1d1f}.tl li.on::before{background:#1a9a52}
+.tl li b{display:block;font-weight:600}
+.tn{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#f5f5f7;border-radius:12px;padding:10px 12px;font-size:14px;margin-top:6px}
+.tn b{font-variant-numeric:tabular-nums}
+.tn a,.tn button{font-size:13px;color:#0066cc}
+.tn a{margin-left:auto;background:#0071e3;color:#fff;border-radius:980px;padding:5px 12px}
+.addr{font-size:12px;color:#6e6e73;margin-top:8px}
+.none{text-align:center;color:#6e6e73;padding:30px 0}
+.none a{color:#0066cc}
+.hint{font-size:12px;color:#86868b;line-height:1.6;margin-top:6px}
+</style>
+</head>
+<body class="store">
+<header class="gnav">
+  <nav class="gnav-in">
+    <a class="logo" href="index.html">M X <span>化妆品批发中心</span></a>
+    <ul class="links"><li><a href="shop.html">商店</a></li></ul>
+  </nav>
+</header>
+
+<main class="mo"><div class="mo-in">
+  <h1>我的订单</h1>
+  <p class="lead" id="lead">游客登录后，可以查看购买的商品和物流。</p>
+  <div id="app"></div>
+</div></main>
+<div class="toast" id="toast"></div>
+
+<script src="products.js"></script>
+<script src="ship.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const GK = 'mx_guest_v1', OK = 'mx_orders_v1';
+const get = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
+const put = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+let tt; const say = m => { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 2200); };
+const P = window.PRODUCTS || [];
+
+/* 商家发来的订单链接：#o=…，打开就存进本机的「我的订单」（同一订单号则更新物流） */
+let opened = null;
+(function importLink() {
+  const m = location.hash.match(/#o=([\w-]+)/); if (!m) return;
+  const d = SHIP.dec(m[1]); if (!d || !d.no) return;
+  const all = get(OK) || [];
+  const i = all.findIndex(o => o.no === d.no);
+  if (i >= 0) Object.assign(all[i], { st: d.st, carrier: d.carrier, tn: d.tn, paidAt: d.paidAt, shippedAt: d.shippedAt });
+  else all.unshift({ no: d.no, amount: d.amount, lines: d.items, name: d.name, phone: d.phone, addr: d.addr, time: new Date(d.added).toLocaleString('zh-CN'),
+    added: d.added, st: d.st, carrier: d.carrier, tn: d.tn, paidAt: d.paidAt, shippedAt: d.shippedAt });
+  put(OK, all); opened = d;
+  if (!get(GK) && d.phone) put(GK, { phone: d.phone, name: d.name || '' });
+  history.replaceState(null, '', location.pathname);
+})();
+
+function login() {
+  $('#lead').textContent = '游客登录后，可以查看购买的商品和物流。';
+  $('#app').innerHTML = `<div class="panel">
+    <label>手机号<input id="gPhone" type="tel" inputmode="numeric" maxlength="11" placeholder="下单时填写的手机号"></label>
+    <label>称呼（选填）<input id="gName" placeholder="怎么称呼你"></label>
+    <button class="btn" id="gGo">游客登录</button>
+    <p class="hint">不用注册、不用密码。订单记录保存在这台手机的浏览器里；在别的手机上看，打开店主微信发给你的订单链接即可。</p></div>`;
+  $('#gGo').onclick = () => {
+    const phone = $('#gPhone').value.trim();
+    if (!/^1\d{10}$/.test(phone)) return say('请输入 11 位手机号');
+    put(GK, { phone, name: $('#gName').value.trim() }); render();
+  };
+}
+
+/* 把两种来源的订单统一成：商品行（带图）+ 状态 */
+const findProd = line => P.find(p => line.startsWith(`${p.brand} ${p.name}`));
+function itemsOf(o) {
+  if (o.items && o.items.length && typeof o.items[0] === 'object') return o.items.map(it => {
+    const p = P.find(x => x.id === it.id) || {};
+    return { photo: p.photo, title: `${p.brand || ''} ${p.name || it.id}`, spec: it.spec, qty: it.qty, price: it.price };
+  });
+  return (o.lines || []).map(l => {
+    const p = findProd(l), q = (l.match(/×\s*(\d+)\s*$/) || [])[1];
+    const spec = p ? l.slice(`${p.brand} ${p.name}`.length).replace(/×\s*\d+\s*$/, '').trim() : '';
+    return { photo: p && p.photo, title: p ? `${p.brand} ${p.name}` : l.replace(/×\s*\d+\s*$/, ''), spec, qty: +q || 1 };
+  });
+}
+const stOf = o => o.st != null ? o.st : 0;
+const ST = ['待确认收款', '待发货', '已发货', '已关闭'];
+const fmt = t => t ? new Date(t).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+
+function card(o) {
+  const st = stOf(o), its = itemsOf(o);
+  const steps = [
+    ['已下单', o.time || fmt(o.added), true],
+    ['商家确认收款', fmt(o.paidAt), st >= 1 && st !== 3],
+    ['已发货', o.shippedAt ? `${fmt(o.shippedAt)} · ${SHIP.carrierName(o.carrier)}` : '', st === 2],
+    ['运输中 · 派送 · 签收', st === 2 ? '点「查看物流」看实时轨迹' : '', false]
+  ];
+  return `<div class="od${opened && opened.no === o.no ? ' hl' : ''}">
+    <div class="od-h"><span>订单号 <b>${esc(o.no)}</b></span><span class="tag t${st}">${ST[st]}</span></div>
+    ${its.map(i => `<div class="it"><div class="th">${i.photo ? `<img src="${i.photo}" alt="">` : ''}</div>
+      <span>${esc(i.title)}<small>${esc(i.spec)} × ${i.qty}</small></span>${i.price ? `<b>¥${i.price * i.qty}</b>` : ''}</div>`).join('')}
+    <div class="od-sum">实付 <b>¥${o.amount}</b></div>
+    ${st === 2 && o.tn ? `<div class="tn">${esc(SHIP.carrierName(o.carrier))} <b>${esc(o.tn)}</b>
+      <button data-cp="${esc(o.tn)}">复制</button><a target="_blank" rel="noopener" href="${SHIP.trackURL(o.carrier, o.tn)}">查看物流</a></div>
+      ${o.carrier === 'shunfeng' ? '<p class="hint">顺丰查询需要输入收件人手机号后四位。</p>' : ''}` : ''}
+    <ul class="tl">${steps.map(([a, b, on]) => `<li class="${on ? 'on' : ''}"><b>${a}</b>${esc(b)}</li>`).join('')}</ul>
+    <p class="addr">${esc(o.name)} ${esc(o.phone)} · ${esc(o.addr)}</p></div>`;
+}
+
+function render() {
+  const g = get(GK);
+  if (!g) return login();
+  const mine = (get(OK) || []).filter(o => !o.phone || o.phone === g.phone);
+  $('#lead').textContent = '订单状态由店主确认收款、填写快递单号后更新。';
+  $('#app').innerHTML = `<div class="panel who"><div class="av">${esc((g.name || '游')[0])}</div>
+      <div><b>${esc(g.name || '游客')}</b><small>${g.phone.slice(0, 3)}****${g.phone.slice(7)}</small></div>
+      <button id="out">退出</button></div>
+    ${mine.length ? mine.map(card).join('') : '<p class="none">还没有订单。<a href="shop.html">去逛逛 →</a></p>'}
+    <p class="hint">店主发货后会在微信发给你一条订单链接，打开它，这里的物流信息就会更新。</p>`;
+  $('#out').onclick = () => { localStorage.removeItem(GK); render(); };
+  document.querySelectorAll('[data-cp]').forEach(b => b.onclick = () => {
+    const t = b.dataset.cp, ok = () => say('单号已复制');
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(ok); else { const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); document.execCommand('copy'); a.remove(); ok(); }
+  });
+}
+render();
+</script>
+</body>
+</html>
