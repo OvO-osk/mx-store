@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M X 化妆品批发中心</title>
+<meta name="description" content="M X 化妆品批发中心 · CHANEL 香奈儿 经典版蔚蓝男士淡香水 EDT">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231d1d1f'/%3E%3Ctext x='32' y='42' font-size='26' font-weight='700' text-anchor='middle' fill='%23fff' font-family='Arial'%3EMX%3C/text%3E%3C/svg%3E">
+</head>
+<body class="dark">
+
+<header class="gnav">
+  <nav class="gnav-in">
+    <button class="ico menu" id="menuBtn" aria-label="分类菜单"><svg viewBox="0 0 24 24"><path d="M4 8h16M4 16h16"/></svg></button>
+    <a class="logo" href="index.html">M X <span>化妆品批发中心</span></a>
+    <ul class="links" id="catLinks"></ul>
+    <button class="ico bag" id="bagBtn" aria-label="购物车"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 13H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><b id="bagN">0</b></button>
+  </nav>
+</header>
+<div class="ribbon" id="top">测试版网站 · 价格以正式上线为准。</div>
+
+<!-- 1. 主视觉：视频循环 -->
+<section class="hero">
+  <div class="hero-copy reveal">
+    <p class="eyebrow">CHANEL 香奈儿</p>
+    <h1>蔚蓝。</h1>
+    <h2>经典版男士淡香水 EDT</h2>
+    <div class="cta"><a class="btn" href="#buy" data-pick="bleu-edt">购买</a><a class="lnk" href="#film">了解更多 ›</a></div>
+  </div>
+  <div class="hero-video reveal">
+    <video id="heroVid" src="media/bleu.mp4" poster="media/poster.jpg" autoplay muted loop playsinline preload="auto"></video>
+  </div>
+</section>
+
+<!-- 2. 苹果式滚动播放：视频随滚动逐帧推进 -->
+<section class="film" id="film" data-seq="media/seq" data-n="96">
+  <div class="sticky">
+    <canvas class="seq" width="640" height="640"></canvas>
+    <div class="shade"></div>
+    <div class="chap" data-a="0" data-b=".2"><p class="k">木质香调</p><h3>自由，<br>不受拘束。</h3></div>
+    <div class="chap" data-a=".22" data-b=".4"><p class="k">檀香</p><h3>温暖、绵长的木质尾韵。</h3></div>
+    <div class="chap" data-a=".42" data-b=".58"><p class="k">雪松</p><h3>干净利落，像清晨的林间。</h3></div>
+    <div class="chap" data-a=".6" data-b=".76"><p class="k">葡萄柚</p><h3>一开瓶，清爽的柑橘气息。</h3></div>
+    <div class="chap end" data-a=".8" data-b="1.2"><p class="k">BLEU DE CHANEL</p><h3>经典版蔚蓝</h3></div>
+    <div class="progress"><i class="bar"></i></div>
+  </div>
+</section>
+
+<!-- 3. 香调 -->
+<section class="notes" id="notes">
+  <h2 class="big reveal">五种气味，<br>一种性格。</h2>
+  <div class="tiers">
+    <div class="tier reveal"><span class="lv">前调</span><b>葡萄柚</b><p>清新明亮的柑橘开场</p></div>
+    <div class="tier reveal"><span class="lv">中调</span><b>肉豆蔻</b><p>微辛的香料，增添层次</p></div>
+    <div class="tier reveal"><span class="lv">后调</span><b>琥珀 · 檀香 · 雪松</b><p>沉稳温暖的木质收尾</p></div>
+  </div>
+</section>
+
+<!-- 4. 瓶身放大 + 规格 -->
+<section class="bottle" id="bottle">
+  <div class="sticky b-sticky">
+    <img id="bigBottle" src="media/bottle.png" alt="CHANEL 蔚蓝 男士淡香水">
+    <div class="b-copy" id="bCopy"><h2>50ml · 100ml</h2><p>两种容量，随你选。</p></div>
+  </div>
+</section>
+
+<!-- ============ 迪奥 旷野 ============ -->
+<section class="hero sv-hero" id="sauvage">
+  <div class="hero-copy reveal">
+    <p class="eyebrow">DIOR 迪奥</p>
+    <h1 class="sv-title">旷野。</h1>
+    <h2>男士淡香水 EDT · 馥奇香调</h2>
+    <div class="cta"><a class="btn" href="#buy" data-pick="sauvage-edt">购买</a><a class="lnk" href="#sv-film">了解更多 ›</a></div>
+  </div>
+  <div class="hero-video reveal">
+    <video src="media/dior/sauvage.mp4" poster="media/dior/poster.jpg" autoplay muted loop playsinline preload="auto"></video>
+  </div>
+</section>
+
+<section class="film sv" id="sv-film" data-seq="media/dior/seq" data-n="96">
+  <div class="sticky">
+    <canvas class="seq" width="640" height="640"></canvas>
+    <div class="shade"></div>
+    <div class="chap" data-a="0" data-b=".3"><p class="k">SAUVAGE</p><h3>粗犷，<br>又干净利落。</h3></div>
+    <div class="chap" data-a=".34" data-b=".5"><p class="k">香柠檬</p><h3>多汁的卡拉布里亚香柠檬。</h3></div>
+    <div class="chap" data-a=".52" data-b=".66"><p class="k">雪松</p><h3>冷冽木质，像雪后的森林。</h3></div>
+    <div class="chap end" data-a=".72" data-b="1.2"><p class="k">DIOR SAUVAGE</p><h3>旷野 · 淡香水</h3></div>
+    <div class="progress"><i class="bar"></i></div>
+  </div>
+</section>
+
+<section class="notes sv-notes">
+  <h2 class="big reveal">清新辛香，<br>粗犷木质。</h2>
+  <div class="tiers">
+    <div class="tier reveal"><span class="lv">前调</span><b>香柠檬 · 胡椒</b><p>明亮多汁，带一点辛辣</p></div>
+    <div class="tier reveal"><span class="lv">中调</span><b>薰衣草 · 花椒 · 香根草</b><p>馥奇调的核心，清爽有层次</p></div>
+    <div class="tier reveal"><span class="lv">后调</span><b>降龙涎香醚 · 雪松 · 劳丹脂</b><p>温暖的琥珀木质尾韵</p></div>
+  </div>
+  <div class="sv-bottle reveal"><img src="media/dior/bottle.png" alt="DIOR 旷野 淡香水"><p>60ml · 100ml</p></div>
+</section>
+
+<!-- 5. 购买 -->
+<section class="buy-wrap">
+  <h2 class="pick-title">选择你的香水</h2>
+  <div class="pick" id="pick"></div>
+  <section class="buy" id="buy"></section>
+</section>
+
+<!-- 6. 分类入口 -->
+<section class="shop" id="shop">
+  <h2 class="big">按分类选购。</h2>
+  <p class="lead">香水、底妆、口红、护肤，全部正品现货。</p>
+  <div class="cats" id="cats"></div>
+  <p class="more"><a class="lnk" href="shop.html">浏览全部商品 ›</a></p>
+</section>
+
+<footer class="foot">
+  <div class="foot-in">
+    <p>测试版说明：库存数字目前只在你自己的浏览器里扣减（换手机或清缓存会恢复为 12），正式版接入在线数据库后才会对所有买家同步。</p>
+    <p class="copy">© 2026 M X 化妆品批发中心</p>
+  </div>
+</footer>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="购物车">
+  <div class="dh"><h3>购物车</h3><button id="closeCart" aria-label="关闭">✕</button></div>
+  <div id="cartList"></div>
+  <div class="df"><div class="sum"><span>合计</span><b id="sum">¥0</b></div><button class="btn wide" id="checkout">去结算</button></div>
+</aside>
+<div class="toast" id="toast"></div>
+
+<script src="products.js"></script>
+<script src="common.js"></script>
+<script src="pay.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
